@@ -1,0 +1,58 @@
+services:
+ 
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    container_name: lobiko-backend
+    restart: unless-stopped
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://deploiementkkt-mysql:3306/${BD_NAME}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: ${BD_USER}
+      SPRING_DATASOURCE_PASSWORD: ${BD_PASSWORD}
+      SERVER_PORT: 8080
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - internal
+      - traefik-proxy
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.lobikoapp-api.rule=Host(`api2.bdomkikwit.tech`)
+      - traefik.http.routers.lobikoapp-api.entrypoints=websecure
+      - traefik.http.routers.lobikoapp-api.tls=true
+      - traefik.http.routers.lobikoapp-api.tls.certresolver=letsencrypt
+      - traefik.http.services.lobikoapp-api.loadbalancer.server.port=8080
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: lobiko-frontend
+    restart: unless-stopped
+    depends_on:
+      - backend
+    networks:
+      - traefik-proxy
+    labels:
+      - traefik.enable=true
+      - traefik.docker.network=traefik-proxy
+      - traefik.http.routers.lobikoapp-front.rule=Host(`lobikoapp.bdomkikwit.tech`)
+      - traefik.http.routers.lobikoapp-front.entrypoints=websecure
+      - traefik.http.routers.lobikoapp-front.tls=true
+      - traefik.http.routers.lobikoapp-front.tls.certresolver=letsencrypt
+      - traefik.http.services.lobikoapp-front.loadbalancer.server.port=80
+
+volumes:
+  mysql_data:
+
+networks:
+  internal:
+    driver: bridge
+  traefik-proxy:
+    external: true

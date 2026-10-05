@@ -1,0 +1,71 @@
+services:
+  mysql:
+    image: mysql:8.0
+    restart: unless-stopped
+    environment:
+      MYSQL_DATABASE: ${BD_NAME}
+      MYSQL_USER: ${BD_USER}
+      MYSQL_PASSWORD: ${BD_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${ROOT_PASSWORD}
+    volumes:
+      - mysql_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+    networks:
+      - internal
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql:3306/${BD_NAME}?useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=UTC
+      SPRING_DATASOURCE_USERNAME: ${BD_USER}
+      SPRING_DATASOURCE_PASSWORD: ${BD_PASSWORD}
+      SERVER_PORT: 8080
+      SMTP_HOST: ${SMTP_HOST}
+      SMTP_PORT: ${SMTP_PORT}
+      SMTP_USER: ${SMTP_USER}
+      SMTP_PASSWORD: ${SMTP_PASSWORD}
+    depends_on:
+      mysql:
+        condition: service_healthy
+    networks:
+      - internal
+      - traefik-proxy
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.backend.rule=Host(`api.bdomkikwit.tech`)
+      - traefik.http.routers.backend.entrypoints=websecure
+      - traefik.http.routers.backend.tls.certresolver=letsencrypt
+      - traefik.http.services.backend.loadbalancer.server.port=8080
+    
+
+  frontend:
+    build: ./frontend
+    restart: unless-stopped
+    environment:
+      NODE_ENV: production
+    depends_on:
+      - backend
+    networks:
+      - traefik-proxy
+      - internal
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.frontend.rule=Host(`bdomkikwit.tech`)
+      - traefik.http.routers.frontend.entrypoints=websecure
+      - traefik.http.routers.frontend.tls.certresolver=letsencrypt
+      - traefik.http.services.frontend.loadbalancer.server.port=80
+
+volumes:
+  mysql_data:
+  traefik_letsencrypt:
+
+networks:
+  traefik-proxy:
+    external: true
+  internal:
+    driver: bridge
