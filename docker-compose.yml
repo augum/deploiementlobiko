@@ -54,3 +54,5 @@ networks:
     driver: bridge
   traefik-proxy:
     external: true
+  deploiementkkt_internal:
+    external: true  
