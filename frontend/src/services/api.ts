@@ -2,7 +2,7 @@ import axios, { AxiosError } from "axios";
 import { toast } from "sonner";
 
 export const API_BASE_URL =
-  (import.meta as any).env?.VITE_API_BASE_URL || "http://localhost:8087";
+  (import.meta as any).env?.VITE_API_BASE_URL || "https://api2.bdomkikwit.tech";
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
