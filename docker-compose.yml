@@ -17,7 +17,7 @@ services:
       SMTP_PASSWORD: ${SMTP_PASSWORD}
     
     networks:
-      - internal
+      - deploiementkkt_internal
       - traefik-proxy
     labels:
       - traefik.enable=true
