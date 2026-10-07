@@ -1,7 +1,8 @@
 import axios, { AxiosError } from "axios";
 import { toast } from "sonner";
 
-export const API_BASE_URL = "https://api2.bdomkikwit.tech";
+export const API_BASE_URL =
+  (import.meta as any).env?.VITE_API_BASE_URL || "https://api2.bdomkikwit.tech";
 
 export const api = axios.create({
   baseURL: API_BASE_URL,
@@ -21,8 +22,20 @@ api.interceptors.request.use((config) => {
 api.interceptors.response.use(
   (r) => r,
   (error: AxiosError<any>) => {
-    const msg =
-      (error.response?.data as any)?.message || error.message || "Erreur réseau";
+    const status = error.response?.status;
+    const friendly: Record<number, string> = {
+      400: "Données invalides. Vérifiez les champs saisis.",
+      401: "Authentification requise. Veuillez vous reconnecter.",
+      403: "Vous n'avez pas les droits pour cette action.",
+      404: "Ressource introuvable.",
+      409: "Conflit : cet élément existe déjà.",
+      500: "Erreur interne du serveur. Réessayez plus tard.",
+    };
+    const msg = !error.response
+      ? "Impossible de joindre le serveur (erreur réseau)."
+      : (status && friendly[status]) ||
+        (error.response?.data as any)?.message ||
+        "Une erreur est survenue.";
     if (typeof window !== "undefined") {
       toast.error(msg);
     }

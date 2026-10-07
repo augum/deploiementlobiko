@@ -7,6 +7,7 @@ import {
   Sparkles,
   Users,
   Link2,
+  ShieldCheck,
 } from "lucide-react";
 import {
   Sidebar,
@@ -33,6 +34,17 @@ const metier = [
   { title: "Hôpital ↔ Spécialité", url: "/associations/hopital-specialite", icon: Link2 },
 ];
 
+// Menu Configuration — ajouter ici les futurs modules de configuration
+const configuration = [
+  { title: "Gestion des rôles", url: "/configuration/roles", icon: ShieldCheck },
+];
+
+const groups = [
+  { label: "Paramétrage", items: parametrage },
+  { label: "Métier", items: metier },
+  { label: "Configuration", items: configuration },
+];
+
 export function AppSidebar() {
   const { pathname } = useLocation();
   const isActive = (u: string) => (u === "/" ? pathname === "/" : pathname.startsWith(u));
@@ -53,40 +65,25 @@ export function AppSidebar() {
         </NavLink>
       </SidebarHeader>
       <SidebarContent>
-        <SidebarGroup>
-          <SidebarGroupLabel>Paramétrage</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {parametrage.map((item) => (
-                <SidebarMenuItem key={item.url}>
-                  <SidebarMenuButton asChild isActive={isActive(item.url)}>
-                    <NavLink to={item.url}>
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
-        <SidebarGroup>
-          <SidebarGroupLabel>Métier</SidebarGroupLabel>
-          <SidebarGroupContent>
-            <SidebarMenu>
-              {metier.map((item) => (
-                <SidebarMenuItem key={item.url}>
-                  <SidebarMenuButton asChild isActive={isActive(item.url)}>
-                    <NavLink to={item.url}>
-                      <item.icon className="h-4 w-4" />
-                      <span>{item.title}</span>
-                    </NavLink>
-                  </SidebarMenuButton>
-                </SidebarMenuItem>
-              ))}
-            </SidebarMenu>
-          </SidebarGroupContent>
-        </SidebarGroup>
+        {groups.map((g) => (
+          <SidebarGroup key={g.label}>
+            <SidebarGroupLabel>{g.label}</SidebarGroupLabel>
+            <SidebarGroupContent>
+              <SidebarMenu>
+                {g.items.map((item) => (
+                  <SidebarMenuItem key={item.url}>
+                    <SidebarMenuButton asChild isActive={isActive(item.url)}>
+                      <NavLink to={item.url}>
+                        <item.icon className="h-4 w-4" />
+                        <span>{item.title}</span>
+                      </NavLink>
+                    </SidebarMenuButton>
+                  </SidebarMenuItem>
+                ))}
+              </SidebarMenu>
+            </SidebarGroupContent>
+          </SidebarGroup>
+        ))}
       </SidebarContent>
     </Sidebar>
   );
