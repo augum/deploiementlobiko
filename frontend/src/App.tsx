@@ -12,6 +12,7 @@ import { MedecinSpecialiteList } from "@/pages/medecin-specialite/List";
 import { HopitalSpecialiteList } from "@/pages/hopital-specialite/List";
 import { NotFound } from "@/pages/NotFound";
 import { GestionRoles } from "@/app/configuration/pages/GestionRoles";
+import { GestionUtilisateurs } from "@/app/configuration/pages/GestionUtilisateurs";
 
 export default function App() {
   return (
@@ -35,6 +36,7 @@ export default function App() {
         />
         <Route path="/associations" element={<Navigate to="/associations/medecin-specialite" replace />} />
         <Route path="/configuration/roles" element={<GestionRoles />} />
+        <Route path="/configuration/utilisateurs" element={<GestionUtilisateurs />} />
         <Route path="/configuration" element={<Navigate to="/configuration/roles" replace />} />
         <Route path="*" element={<NotFound />} />
       </Route>

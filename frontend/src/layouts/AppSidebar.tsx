@@ -8,6 +8,7 @@ import {
   Users,
   Link2,
   ShieldCheck,
+  UserCog,
 } from "lucide-react";
 import {
   Sidebar,
@@ -37,6 +38,7 @@ const metier = [
 // Menu Configuration — ajouter ici les futurs modules de configuration
 const configuration = [
   { title: "Gestion des rôles", url: "/configuration/roles", icon: ShieldCheck },
+  { title: "Utilisateurs", url: "/configuration/utilisateurs", icon: UserCog },
 ];
 
 const groups = [

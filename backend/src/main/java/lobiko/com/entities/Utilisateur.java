@@ -1,9 +1,6 @@
 package lobiko.com.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,4 +17,6 @@ public class Utilisateur {
     private String login;
     private String password;
     private Long id_role;
+    @Transient
+    private Role role;
 }

@@ -30,6 +30,7 @@ public class SpecialiteServiceImpl implements SpecialiteService {
         Specialite specialisation = repository.findById(id).get();
         Specialite speciatisationfromDto = mapper.toSpecialite(requestDto);
         specialisation.setNom(speciatisationfromDto.getNom());
+        repository.save(specialisation);
         return mapper.toSpecialiteResponseDto(specialisation);
     }
     @Override
