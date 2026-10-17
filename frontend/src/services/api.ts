@@ -10,19 +10,16 @@ export const api = axios.create({
   timeout: 15000,
 });
 
-api.interceptors.request.use((config) => {
-  const token =
-    typeof window !== "undefined" ? window.localStorage.getItem("token") : null;
-  if (token && config.headers) {
-    config.headers.Authorization = `Bearer ${token}`;
-  }
-  return config;
-});
 
 api.interceptors.response.use(
   (r) => r,
   (error: AxiosError<any>) => {
     const status = error.response?.status;
+    if ((error.config as any)?.skipErrorToast) return Promise.reject(error);
+    if (status === 401 && typeof window !== "undefined") {
+      window.dispatchEvent(new Event("auth:expired"));
+      return Promise.reject(error);
+    }
     const friendly: Record<number, string> = {
       400: "Données invalides. Vérifiez les champs saisis.",
       401: "Authentification requise. Veuillez vous reconnecter.",

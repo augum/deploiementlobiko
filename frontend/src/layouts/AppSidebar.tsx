@@ -21,6 +21,7 @@ import {
   SidebarMenuItem,
   SidebarHeader,
 } from "@/components/ui/sidebar";
+import { useAuth } from "@/auth/AuthContext";
 
 const parametrage = [
   { title: "Tableau de bord", url: "/", icon: LayoutDashboard },
@@ -41,14 +42,16 @@ const configuration = [
   { title: "Utilisateurs", url: "/configuration/utilisateurs", icon: UserCog },
 ];
 
-const groups = [
+const allGroups = [
   { label: "Paramétrage", items: parametrage },
   { label: "Métier", items: metier },
-  { label: "Configuration", items: configuration },
+  { label: "Configuration", items: configuration, adminOnly: true },
 ];
 
 export function AppSidebar() {
   const { pathname } = useLocation();
+  const { can } = useAuth();
+  const groups = allGroups.filter((g) => !g.adminOnly || can("configuration"));
   const isActive = (u: string) => (u === "/" ? pathname === "/" : pathname.startsWith(u));
 
   return (
